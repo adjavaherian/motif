@@ -1,54 +1,78 @@
 //main.js
 'use strict';
 
-window.onload = function(){
+//check click
+function checkClick(e){
 
-    //remove everything in here to start your own prototyping
-    console.log('Peace, Love and Pixels.');
+    e.stopPropagation();
+    var index = $(this).parent().index();
 
-    //stage
-    var stage = document.getElementById('stage');
-    var sW = $('#stage').css('width').substring(0,3) - 2;
-    var sH = $('#stage').css('height').substring(0,3) - 2;
+    $(this).closest('tr').find('td').each(function(k,v){
 
-    //scene, cam, renderer
-    var scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, sW/sH, 0.1, 1000);
-    var renderer = new THREE.WebGLRenderer();
-
-
-    //create a cube
-    var geometry = new THREE.BoxGeometry(1,1,1);
-    var material = new THREE.MeshNormalMaterial({
-        wireframe: true
+        if($(v).has('input[type="checkbox"]').length){
+//            console.log('kv', k, v);
+            if(k <= index){
+                $(v).find('input[type="checkbox"]').prop('checked', true);
+            }else{
+                $(v).find('input[type="checkbox"]').prop('checked', false);
+            }
+        }
     });
-    var cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
 
-    //load a parabolic plane
-    var plane = new THREE.SphereGeometry(75, 16, 8, 0, 7, 1, 1.2);
-    var planeMaterial = new THREE.MeshNormalMaterial();
-    var planeMesh = new THREE.Mesh(plane, planeMaterial);
-    planeMesh.rotation.y += 160.78;
-    planeMesh.scale.x = -1;
-    scene.add(planeMesh);
+}
 
-    //render
-    var render = function () {
-        requestAnimationFrame(render);
+function reportLevel(e){
 
-        cube.rotation.x += 0.1;
-        cube.rotation.y += 0.1;
+    e.stopPropagation();
+//    console.log($(this).parent().find('table tr'));
 
-        renderer.render(scene, camera);
-    };
+    $(this).parent().find('table tr').each(function(i, iv){
+        var counter = 0;
+        var tds = $(iv).find('td');
+        tds.each(function(j,jv){
+            if($(jv).has('input[type="checkbox"]').length){
 
-    renderer.setSize(sW, sH);
-    render();
+                var checkbox = $(jv).find('input[type="checkbox"]');
+//                console.log('found cbox ', checkbox, checkbox.attr('checked'));
 
-    //set camera
-    camera.position.z = 5;
+                if(checkbox.is(':checked')){
+                    counter ++;
+                }
+            }
+        });
+        console.log($(tds[0]).html() + 'Level : '+counter);
+    });
 
-    stage.appendChild(renderer.domElement);
+}
 
-};
+$(document).ready(function(){
+
+    $( "<div></div>" )
+        .appendTo( "#stage" )
+        .motif_checks({
+            class: 'table_3',
+            rows: ['Value', 'Basis'],
+            cols: ['Public', 'Protected', 'Private']
+        });
+
+    $( "<div></div>" )
+        .appendTo( "#stage" )
+        .motif_checks({
+            class: 'table_10',
+            rows: ['Numbers', 'Letters'],
+            cols: ['','','','','','','','','','',]
+        });
+
+
+    //checkbox controls
+    $(".motif_checks input[type='checkbox']").change(function(e){
+
+//        console.log('check');
+
+    });
+
+
+});
+
+
+
